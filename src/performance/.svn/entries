@@ -1,0 +1,54 @@
+8
+
+dir
+18
+svn+ssh://localhost/semweb/svn/trunk/trunk/JPDomainBuilderV3/src/performance
+svn+ssh://localhost/semweb/svn
+
+
+
+2008-09-10T13:40:01.514368Z
+18
+tbriggs
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+5535c5a4-c549-4c49-bf7d-2d1cfbac35e5
+
+DisjunctionPerformance.java
+file
+
+
+
+
+2008-06-28T12:17:16.000000Z
+29c722e57d8605aea72ce902df7056cb
+2008-09-10T13:40:01.514368Z
+18
+tbriggs
+has-props
+
+IntersectionPerformance.java
+file
+
+
+
+
+2008-06-28T11:56:27.000000Z
+a7f30beb2eb8fb125e0a7cb7d69832a4
+2008-09-10T13:40:01.514368Z
+18
+tbriggs
+has-props
+

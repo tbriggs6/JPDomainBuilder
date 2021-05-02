@@ -1,0 +1,92 @@
+package explorer;
+import java.util.Collection;
+import java.util.Iterator;
+
+
+import edu.ship.thb.swoogle.Results;
+import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
+import edu.stanford.smi.protegex.owl.model.OWLClass;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLRestriction;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.RDFObject;
+import edu.stanford.smi.protegex.owl.model.RDFProperty;
+import edu.stanford.smi.protegex.owl.model.RDFResource;
+import edu.stanford.smi.protegex.owl.model.RDFSClass;
+
+
+public class BuildNamed extends BuildDisjunction {
+
+	public BuildNamed(OWLModel model, ProtegeReasoner reasoner, Results results) {
+		super(GeneratorType.LCNS, model, reasoner, results);
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	protected DomainPair buildDomain( OWLObjectProperty prop) throws NotUsuablePropertyException {
+	
+		DomainPair disjunctDomain = super.buildDomain(prop);
+	    
+		OWLNamedClass namedDomain = model.getOWLThingClass();
+		
+		Iterator classes = model.listOWLNamedClasses();
+		while (classes.hasNext())
+		{
+			try {
+				OWLNamedClass onc = (OWLNamedClass) classes.next();
+				if (reasoner.isSubsumedBy(disjunctDomain.computed, onc))
+				{
+					if (reasoner.isSubsumedBy(onc, namedDomain))
+						namedDomain = onc;
+				}
+			}
+			catch(ProtegeReasonerException E)
+			{
+				;
+			}
+		}
+		
+	
+		disjunctDomain.computed = namedDomain;
+	
+		System.out.println("named domain: " + disjunctDomain.toString());
+		return disjunctDomain;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	protected RangePair buildRange( OWLObjectProperty prop) throws NotUsuablePropertyException {
+	
+		RangePair disjunctRange = super.buildRange(prop);
+	    
+		OWLNamedClass namedRange = model.getOWLThingClass();
+		
+		Iterator classes = model.listOWLNamedClasses();
+		while (classes.hasNext())
+		{
+			try {
+				OWLNamedClass onc = (OWLNamedClass) classes.next();
+				if (reasoner.isSubsumedBy(disjunctRange.computed, onc))
+				{
+					if (reasoner.isSubsumedBy(onc, namedRange))
+						namedRange = onc;
+				}
+			}
+			catch(ProtegeReasonerException E)
+			{
+				;
+			}
+		}
+		
+	
+		disjunctRange.computed = namedRange;
+	
+		System.out.println("named domain: " + disjunctRange.toString());
+		return disjunctRange;
+	}
+	
+}

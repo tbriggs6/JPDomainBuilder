@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl2 "http://www.w3.org/2006/12/owl2#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY Ontology1214869953419 "http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#"
+     xml:base="http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:Ontology1214869953419="http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:owl2="http://www.w3.org/2006/12/owl2#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#P -->
+
+    <owl:ObjectProperty rdf:about="#P"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#A -->
+
+    <owl:Class rdf:about="#A">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#AA -->
+
+    <owl:Class rdf:about="#AA">
+        <rdfs:subClassOf rdf:resource="#A"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#P"/>
+                <owl:someValuesFrom rdf:resource="#C"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#AB -->
+
+    <owl:Class rdf:about="#AB">
+        <rdfs:subClassOf rdf:resource="#A"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#P"/>
+                <owl:someValuesFrom rdf:resource="#C"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#AC -->
+
+    <owl:Class rdf:about="#AC">
+        <rdfs:subClassOf rdf:resource="#A"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#P"/>
+                <owl:someValuesFrom rdf:resource="#C"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#B -->
+
+    <owl:Class rdf:about="#B">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#BA -->
+
+    <owl:Class rdf:about="#BA">
+        <rdfs:subClassOf rdf:resource="#B"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#P"/>
+                <owl:someValuesFrom rdf:resource="#C"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#BB -->
+
+    <owl:Class rdf:about="#BB">
+        <rdfs:subClassOf rdf:resource="#B"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#P"/>
+                <owl:someValuesFrom rdf:resource="#C"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#BC -->
+
+    <owl:Class rdf:about="#BC">
+        <rdfs:subClassOf rdf:resource="#B"/>
+    </owl:Class>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#C -->
+
+    <owl:Class rdf:about="#C">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#D -->
+
+    <owl:Class rdf:about="#D">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#I -->
+
+    <rdf:Description rdf:about="#I">
+        <P rdf:resource="#J"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://clipper.ship.edu/~tbriggs/2008/5/Ontology1214869953419.owl#J -->
+
+    <rdf:Description rdf:about="#J"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#A"/>
+            <rdf:Description rdf:about="#B"/>
+            <rdf:Description rdf:about="#C"/>
+            <rdf:Description rdf:about="#D"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,534 @@
+package swoogle;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import edu.ship.thb.swoogle.ResultProperty;
+import edu.ship.thb.swoogle.Results;
+import edu.ship.thb.swoogle.WorkUnitCount;
+import edu.stanford.smi.protege.exception.OntologyLoadException;
+import edu.stanford.smi.protegex.owl.inference.reasoner.ProtegeReasoner;
+import edu.stanford.smi.protegex.owl.inference.reasoner.exception.ProtegeReasonerException;
+import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLClass;
+import edu.stanford.smi.protegex.owl.model.OWLIndividual;
+import edu.stanford.smi.protegex.owl.model.OWLIntersectionClass;
+import edu.stanford.smi.protegex.owl.model.OWLModel;
+import edu.stanford.smi.protegex.owl.model.OWLObjectProperty;
+import edu.stanford.smi.protegex.owl.model.OWLUnionClass;
+import edu.stanford.smi.protegex.owl.model.triplestore.Triple;
+import edu.stanford.smi.protegex.owl.model.triplestore.TripleStore;
+import explorer.BuildDisjunction;
+import explorer.BuildNamed;
+import explorer.BuildVivified;
+import explorer.BuilderBase;
+import explorer.GeneratorType;
+import explorer.ModelFactory;
+
+public class FindNewFacts {
+
+	boolean debug = true;
+
+	public class TypePair {
+
+		private OWLIndividual indiv;
+		private OWLClass type;
+
+		public TypePair(OWLIndividual indiv, OWLClass type) {
+			this.indiv = indiv;
+			this.type = type;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof TypePair) {
+				TypePair tp = (TypePair) obj;
+
+				return tp.indiv.equalsStructurally(this.indiv)
+						&& tp.type.equalsStructurally(this.type);
+			} else
+				return false;
+		}
+
+		public OWLIndividual getIndiv() {
+			return indiv;
+		}
+
+		public void setIndiv(OWLIndividual indiv) {
+			this.indiv = indiv;
+		}
+
+		public OWLClass getType() {
+			return type;
+		}
+
+		public void setType(OWLClass type) {
+			this.type = type;
+		}
+
+	}
+
+	// 30 min * 60 min/sec * 1000 ms/sec
+	final long TIMEOUT = 30 * 60 * 1000;
+
+	private class Alarm extends TimerTask {
+
+		private int idurl;
+
+		public Alarm(int idurl) {
+			this.idurl = idurl;
+		}
+
+		@Override
+		public void run() {
+
+			try {
+				System.err
+						.format("==============================================\n");
+				System.err
+						.format("==============================================\n");
+				System.err
+						.format("!!  ERROR : TIMEOUT OCCURRED - TERMINATING  !!\n");
+				System.err
+						.format("==============================================\n");
+				System.err
+						.format("==============================================\n");
+
+				WorkUnitCount.error(idurl, -2, "timeout");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.exit(-1);
+		}
+
+	}
+
+	public int[] findNewFactsIndividuals(WorkUnitCount unit, GeneratorType type)
+			throws Exception {
+		Timer watchDog = new Timer();
+
+		try {
+			// set a timer for this job...
+			watchDog.schedule(new Alarm(unit.getIdurl()), TIMEOUT);
+
+			String url = unit.getUrl();
+			OWLModel model;
+			if (url.startsWith("file:")) {
+				model = ModelFactory.loadFromFile(url.substring(5), url);
+			} else {
+				model = ModelFactory.loadFromURI(url);
+			}
+
+			ProtegeReasoner reasoner = ModelFactory.createReasonerForModel(
+					model, true);
+			reasoner.setAutoSynchronizationEnabled(true);
+			reasoner.classifyTaxonomy();
+			reasoner.computeInferredIndividualTypes();
+
+			BuilderBase bnd = null;
+			Results results = new Results();
+
+			switch (type) {
+			case DISJUNCTION:
+				bnd = new BuildDisjunction(type, model, reasoner, results);
+				break;
+			case LCNS:
+				bnd = new BuildNamed(model, reasoner, results);
+				break;
+			case VIVIFICATION:
+				bnd = new BuildVivified(model, reasoner, results);
+				break;
+			}
+
+			int vals[] = findNewFactsIndividuals(unit, model, results,
+					reasoner, bnd);
+
+			watchDog.cancel();
+			return vals;
+		} catch (IOException E) {
+			throw (E);
+		} catch (OntologyLoadException e) {
+			throw (e);
+		} catch (URISyntaxException e) {
+			throw (e);
+		} catch (ProtegeReasonerException e) {
+			throw (e);
+		} catch (Exception e) {
+			throw (e);
+		} finally {
+			watchDog.cancel();
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public String unionToString(OWLClass C) {
+		StringBuffer buff = new StringBuffer();
+		if (C instanceof OWLUnionClass) {
+			OWLUnionClass ouc = (OWLUnionClass) C;
+			Iterator I = ouc.listOperands();
+			int count = 0;
+			buff.append("(");
+			while (I.hasNext()) {
+				if (count++ > 0)
+					buff.append(" U ");
+				buff.append(unionToString((OWLClass) I.next()));
+			}
+			buff.append(")");
+
+		} else if (C instanceof OWLIntersectionClass) {
+			OWLIntersectionClass oic = (OWLIntersectionClass) C;
+			Iterator I = oic.listOperands();
+			int count = 0;
+			buff.append("(");
+			while (I.hasNext()) {
+				if (count++ > 0)
+					buff.append(" ^ ");
+				buff.append(unionToString((OWLClass) I.next()));
+			}
+			buff.append(")");
+		} else
+			buff.append(C.getName());
+
+		return buff.toString();
+	}
+
+	@SuppressWarnings("unchecked")
+	public int[] findNewFactsIndividuals(WorkUnitCount unit, OWLModel model,
+			Results results, ProtegeReasoner reasoner, BuilderBase process)
+			throws Exception {
+
+		process.run();
+
+		// before processing with domain computation
+		LinkedList<TypePair> origPairs = collectAllTypePairs(model);
+		LinkedList<ResultProperty> props = results.getProperties();
+		for (ResultProperty P : props) {
+			OWLClass domain;
+			OWLClass range;
+
+			if (process instanceof BuildNamed)
+				domain = (OWLClass) P.getDomainLCNSObject();
+			else if (process instanceof BuildVivified)
+				domain = (OWLClass) P.getDomainVivfObject();
+			else if (process instanceof BuildDisjunction)
+				domain = (OWLClass) P.getDomainDisjObject();
+			else
+				domain = null;
+
+			if (process instanceof BuildNamed)
+				range = (OWLClass) P.getRangeLCNSObject();
+			else if (process instanceof BuildVivified)
+				range = (OWLClass) P.getRangeVivfObject();
+			else if (process instanceof BuildDisjunction)
+				range = (OWLClass) P.getRangeDisjObject();
+			else
+				range = null;
+
+			OWLObjectProperty property = model.getOWLObjectProperty(P
+					.getProperty());
+			if (domain != null) {
+				property.setDomain(domain);
+
+				if (debug)
+					System.out.format("Setting %s domain to %s\n", property,
+							unionToString(domain));
+			}
+
+			if (range != null) {
+				property.setRange(range);
+				if (debug)
+					System.out.format("Setting %s range to %s\n", property,
+							unionToString(range));
+			}
+
+		}
+
+		((JenaOWLModel) model).save(new File("newfacts.owl").toURI());
+
+		reasoner.classifyTaxonomy();
+		reasoner.computeInferredHierarchy();
+		reasoner.computeInferredIndividualTypes();
+		reasoner.forceReasonerReSynchronization();
+
+		LinkedList<TypePair> afterPairs = collectAllTypePairs(model);
+		return compareSets(origPairs, afterPairs);
+	}
+
+	@SuppressWarnings("unchecked")
+	private LinkedList<TypePair> collectAllTypePairs(OWLModel model) {
+		Collection<OWLIndividual> origIndividuals = model
+				.getOWLIndividuals(true);
+
+		LinkedList<TypePair> origPairs = new LinkedList<TypePair>();
+		for (OWLIndividual indiv : origIndividuals) {
+			Collection it = indiv.getInferredTypes();
+			for (Object O : it) {
+				if (O instanceof OWLClass) {
+					origPairs.add(new TypePair(indiv, (OWLClass) O));
+				}
+			}
+		}
+		return origPairs;
+	}
+
+	private void compareSets(HashSet<Triple> original, HashSet<Triple> after) {
+
+		if (debug)
+			System.out.format("Size original: %d after: %d\n", original.size(),
+					after.size());
+
+		// decimate triples in sets
+		// wipe out new in old
+		LinkedList<Triple> toDeleteOriginal = new LinkedList<Triple>();
+		LinkedList<Triple> toDeleteAfter = new LinkedList<Triple>();
+
+		for (Triple T : after) {
+			if (original.contains(T)) {
+				toDeleteOriginal.add(T);
+				toDeleteAfter.add(T);
+			}
+		}
+
+		original.removeAll(toDeleteOriginal);
+		after.removeAll(toDeleteAfter);
+
+		// rinse, wash and repeat
+		toDeleteOriginal = new LinkedList<Triple>();
+		toDeleteAfter = new LinkedList<Triple>();
+
+		for (Triple T : original) {
+			if (after.contains(T)) {
+				toDeleteOriginal.add(T);
+				toDeleteAfter.add(T);
+			}
+		}
+
+		original.removeAll(toDeleteOriginal);
+		after.removeAll(toDeleteAfter);
+
+		if (debug) {
+			// now, those left standing... they are the ones that we care
+			// about....
+			System.out.format("Original ones left (not in new): %d\n", original
+					.size());
+			for (Triple T : original) {
+				System.out.format("original %s\n", T);
+			}
+
+			System.out.format("After reasoning: %d\n", after.size());
+			for (Triple T : after) {
+				System.out.format("after %s\n", T);
+			}
+		}
+	}
+
+	private int[] compareSets(LinkedList<TypePair> original,
+			LinkedList<TypePair> after) {
+
+		int numFactsAdded = 0, numFactsLost = 0;
+
+		if (debug)
+			System.out.format("Size original: %d after: %d\n", original.size(),
+					after.size());
+
+		// decimate triples in sets
+		// wipe out new in old
+		LinkedList<TypePair> toDeleteOriginal = new LinkedList<TypePair>();
+		LinkedList<TypePair> toDeleteAfter = new LinkedList<TypePair>();
+
+		if (debug) {
+			// in original
+			System.out.println("-------------------------------------");
+			for (TypePair T : original) {
+				System.out.println(T.getIndiv() + " " + T.getType());
+			}
+
+			System.out.println("-------------------------------------");
+			for (TypePair T : after) {
+				System.out.println(T.getIndiv() + " " + T.getType());
+			}
+
+			System.out.println("-------------------------------------");
+		}
+		for (TypePair T : after) {
+			if (original.contains(T)) {
+				toDeleteOriginal.add(T);
+				toDeleteAfter.add(T);
+			}
+		}
+
+		original.removeAll(toDeleteOriginal);
+		after.removeAll(toDeleteAfter);
+
+		// rinse, wash and repeat
+		toDeleteOriginal = new LinkedList<TypePair>();
+		toDeleteAfter = new LinkedList<TypePair>();
+
+		for (TypePair T : original) {
+			if (after.contains(T)) {
+				toDeleteOriginal.add(T);
+				toDeleteAfter.add(T);
+			}
+		}
+
+		original.removeAll(toDeleteOriginal);
+		after.removeAll(toDeleteAfter);
+
+		if (debug) {
+			// now, those left standing... they are the ones that we care
+			// about....
+			System.out.format("Original ones left (not in new): %d\n", original
+					.size());
+			for (TypePair T : original) {
+				System.out.format("original %s isa %s\n", T.getIndiv(), T
+						.getType());
+
+			}
+
+			System.out.format("After reasoning: %d\n", after.size());
+			for (TypePair T : after) {
+				System.out.format("after %s isa %s\n", T.getIndiv(), T
+						.getType());
+			}
+		}
+
+		numFactsLost = original.size();
+		numFactsAdded = after.size();
+
+		int result[] = new int[2];
+		result[0] = numFactsAdded;
+		result[1] = numFactsLost;
+
+		return result;
+	}
+
+	private HashSet<Triple> getAllTriplesFromModel(OWLModel model) {
+		HashSet<Triple> triples = new HashSet<Triple>();
+		// get all triples!
+		List<TripleStore> tripleStores = model.getTripleStoreModel()
+				.getTripleStores();
+		for (TripleStore ts : tripleStores) {
+			Iterator<Triple> tripleIterator = ts.listTriples();
+			while (tripleIterator.hasNext()) {
+				Triple T = tripleIterator.next();
+				triples.add(T);
+			}
+		}
+		return triples;
+	}
+
+	// public static void main(String args[]) throws FileNotFoundException,
+	// OntologyLoadException, URISyntaxException, ProtegeReasonerException {
+	// try {
+	// FindNewFacts finder = new FindNewFacts();
+	//
+	// File testFile = new File(
+	// "/Users/tbriggs/Documents/workspace/JPDomainBuilderV3/src/tests/test-genfacts.owl"
+	// );
+	// // File testFile = new File(
+	// //
+	// "/Users/tbriggs/Documents/workspace/JPDomainBuilderV3/src/tests/example3.owl"
+	// // );
+	// finder.findNewFactsIndividuals(new WorkUnit("" + -2, testFile
+	// .toURI().toString()), GeneratorType.DISJUNCTION);
+	// // finder.findNewFactsIndividuals(new WorkUnit(""+-2,
+	// // testFile.toURI().toString()),GeneratorType.LCNS);
+	// // finder.findNewFactsIndividuals(new WorkUnit(""+-2,
+	// // testFile.toURI().toString()),GeneratorType.VIVIFICATION);
+	//
+	// GeneratorType type = GeneratorType.DISJUNCTION;
+	// // finder.findNewFactsIndividuals(new WorkUnit(""+3834407,
+	// // "http://gom.kwfgrid.net/ontology/ApplicationOntology"), type);
+	// } catch (Throwable E) {
+	// System.err.println("Exception type: "
+	// + E.getClass().getCanonicalName());
+	// E.printStackTrace();
+	// }
+	// }
+
+	// public static void main(String args[]) throws IOException
+	// {
+	// int idurl = 0;
+	// try {
+	// while (true) {
+	// WorkUnitCount unit = WorkUnitCount.getNext();
+	// if (unit == null)
+	// break;
+	// // return;
+	//					
+	// idurl = unit.getIdurl();
+	//					
+	// FindNewFacts finder = new FindNewFacts( );
+	// int res[] =
+	// finder.findNewFactsIndividuals(unit,GeneratorType.VIVIFICATION);
+	// //int res[] =
+	// finder.findNewFactsIndividuals(unit,GeneratorType.DISJUNCTION);
+	//					
+	// System.err.println("Finished... sendings results");
+	//					
+	// WorkUnitCount.update(idurl,res[0], res[1]);
+	//					
+	// finder = null;
+	// // break;
+	// }
+	// }
+	// catch(java.lang.OutOfMemoryError e) {
+	// System.err.println(
+	// "Error: out of heap space.  This causes a major problem with Protege.");
+	// WorkUnitCount.error(idurl, -3, "out of heap space");
+	// System.exit(-2);
+	// }
+	// catch (Exception e) {
+	// System.err.println("An error occurred: terminating.");
+	//	
+	// e.printStackTrace();
+	// //WorkUnitCount.error(idurl, -4, "other error");
+	// }
+	// System.err.println("Finishing up....");
+	//
+	// }
+
+	public static void main(String args[]) throws IOException {
+		int idurl = 2694788;
+		try {
+
+			WorkUnitCount unit = WorkUnitCount.getID(idurl);
+			if (unit == null) {
+				System.err.println("No work units with id: " + idurl);
+				System.exit(-1);
+			}
+
+			idurl = unit.getIdurl();
+
+			FindNewFacts finder = new FindNewFacts();
+			int res[] = finder.findNewFactsIndividuals(unit,
+					GeneratorType.VIVIFICATION);
+			// int res[] =
+			// finder.findNewFactsIndividuals(unit,GeneratorType.DISJUNCTION);
+
+			finder = null;
+		} catch (java.lang.OutOfMemoryError e) {
+			System.err
+					.println("Error: out of heap space.  This causes a major problem with Protege.");
+			WorkUnitCount.error(idurl, -3, "out of heap space");
+			System.exit(-2);
+		} catch (Exception e) {
+			System.err.println("An error occurred: terminating.");
+
+			e.printStackTrace();
+			// WorkUnitCount.error(idurl, -4, "other error");
+		}
+		System.err.println("Finishing up....");
+
+	}
+}

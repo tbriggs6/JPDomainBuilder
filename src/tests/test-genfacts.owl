@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl2 "http://www.w3.org/2006/12/owl2#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY Ontology1218630671 "http://www.owl-ontologies.com/Ontology1218630671.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.owl-ontologies.com/Ontology1218630671.owl#"
+     xml:base="http://www.owl-ontologies.com/Ontology1218630671.owl"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:Ontology1218630671="http://www.owl-ontologies.com/Ontology1218630671.owl#"
+     xmlns:owl2="http://www.w3.org/2006/12/owl2#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#hasPlace -->
+
+    <owl:ObjectProperty rdf:about="#hasPlace"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#City -->
+
+    <owl:Class rdf:about="#City">
+        <rdfs:subClassOf rdf:resource="#Place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#CityDweller -->
+
+    <owl:Class rdf:about="#CityDweller">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasPlace"/>
+                <owl:someValuesFrom rdf:resource="#City"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#Place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#Londoner -->
+
+    <owl:Class rdf:about="#Londoner">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#CityDweller"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasPlace"/>
+                        <owl:hasValue rdf:resource="#LONDON"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#NewYorker -->
+
+    <owl:Class rdf:about="#NewYorker">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#CityDweller"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasPlace"/>
+                        <owl:hasValue rdf:resource="#NEWYORK"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#Person -->
+
+    <owl:Class rdf:about="#Person"/>
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#Place -->
+
+    <owl:Class rdf:about="#Place"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#GRAHAM -->
+
+    <Person rdf:about="#GRAHAM">
+        <hasPlace rdf:resource="#LONDON"/>
+    </Person>
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#LONDON -->
+
+    <City rdf:about="#LONDON"/>
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#NEWYORK -->
+
+    <City rdf:about="#NEWYORK"/>
+    
+
+
+    <!-- http://www.owl-ontologies.com/Ontology1218630671.owl#RUDY -->
+
+    <Person rdf:about="#RUDY">
+        <hasPlace rdf:resource="#NEWYORK"/>
+    </Person>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#GRAHAM"/>
+            <rdf:Description rdf:about="#RUDY"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#NEWYORK"/>
+            <rdf:Description rdf:about="#LONDON"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF>

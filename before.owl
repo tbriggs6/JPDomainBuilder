@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns="http://www.owl-ontologies.com/Ontology1218630671.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="file:/Users/tbriggs/Documents/workspace/JPDomainBuilderV3/src/tests/test-genfacts.owl">
+  <owl:Ontology rdf:about="http://www.owl-ontologies.com/Ontology1218667794.owl"/>
+  <owl:Ontology rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl"/>
+  <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#Place"/>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#CityDweller"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#Person"/>
+  <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#Londoner">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:hasValue>
+              <City rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#LONDON"/>
+            </owl:hasValue>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#hasPlace"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#CityDweller"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class>
+    <owl:intersectionOf rdf:parseType="Collection">
+      <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:intersectionOf>
+  </owl:Class>
+  <owl:Class>
+    <owl:unionOf rdf:parseType="Collection">
+      <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#NewYork"/>
+      <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#Londoner"/>
+      <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#CityDweller"/>
+    </owl:unionOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#CityDweller">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#City"/>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://www.owl-ontologies.com/Ontology1218630671.owl#hasPlace"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#NewYork">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#CityDweller"/>
+          <owl:Restriction>
+            <owl:hasValue>
+              <City rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#NEWYORK"/>
+            </owl:hasValue>
+            <owl:onProperty rdf:resource="http://www.owl-ontologies.com/Ontology1218630671.owl#hasPlace"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#City">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/Ontology1218630671.owl#Place"/>
+  </owl:Class>
+  <Person rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#GRAHAM">
+    <hasPlace rdf:resource="http://www.owl-ontologies.com/Ontology1218630671.owl#LONDON"/>
+  </Person>
+  <Person rdf:about="http://www.owl-ontologies.com/Ontology1218630671.owl#RUDY">
+    <hasPlace rdf:resource="http://www.owl-ontologies.com/Ontology1218630671.owl#NEWYORK"/>
+  </Person>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4, Build 505)  http://protege.stanford.edu -->
